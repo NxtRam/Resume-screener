@@ -1,9 +1,10 @@
-// src/pages/SignUpPage.jsx
+// src/pages/SignUpPage.jsx (Updated)
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../lib/ToastContext';
-import Card, {CardContent, CardDescription, CardHeader, CardTitle} from '../components/common/Card';
+import Card, { CardContent, CardDescription, CardHeader, CardTitle } from '../components/common/Card';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import { supabase } from '../lib/supabase';
@@ -48,8 +49,7 @@ export default function SignUpPage() {
     try {
       const result = await signUp(signUpForm.email, signUpForm.password, signUpForm.name);
       
-      if (result.user) {
-        // Check if email confirmation is required
+      if (result && result.user) {
         if (!result.user.email_confirmed_at && result.user.identities?.length === 0) {
           addToast('Sign up successful! Please check your email to verify your account.', 'success');
           navigate('/login');
@@ -58,16 +58,16 @@ export default function SignUpPage() {
           navigate('/login');
         }
       } else {
-        throw new Error('Failed to create account');
+        throw new Error('Failed to create account - no user data returned');
       }
     } catch (err) {
       console.error('Sign up error:', err);
       
       // Handle specific error messages
-      if (err.message.includes('already registered')) {
+      if (err.message?.includes('already registered')) {
         setError('An account with this email already exists. Please sign in instead.');
         addToast('An account with this email already exists. Please sign in instead.', 'error');
-      } else if (err.message.includes('password')) {
+      } else if (err.message?.includes('password')) {
         setError('Password is too weak. Please use a stronger password.');
         addToast('Password is too weak. Please use a stronger password.', 'error');
       } else {
@@ -78,30 +78,7 @@ export default function SignUpPage() {
       setLoading(false);
     }
   };
-  const testSimpleSignUp = async () => {
-    try {
-      console.log('Testing simple sign up...');
-      
-      // Try the most basic sign up possible
-      const { data, error } = await supabase.auth.signUp({
-        email: `test-${Date.now()}@example.com`,
-        password: 'password123',
-      });
-      
-      if (error) {
-        console.error('Simple sign up error:', error);
-        alert(`Error: ${error.message}`);
-      } else {
-        console.log('Simple sign up success:', data);
-        alert('Success! User created without any additional data');
-      }
-    } catch (err) {
-      console.error('Simple sign up exception:', err);
-      alert(`Exception: ${err.message}`);
-    }
-  };
   
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
       <div className="max-w-md w-full space-y-8">
@@ -114,7 +91,6 @@ export default function SignUpPage() {
             </Link>
           </p>
         </div>
-        <button type="button" onClick={testSimpleSignUp} className="mt-4 bg-gray-200 text-gray-800 px-4 py-2 rounded">Test SIgnup</button>
         
         <Card>
           <CardHeader>
