@@ -174,7 +174,7 @@ export default function ApplicationList() {
                           <h4 className="text-sm font-medium text-gray-600 mb-2">Key Strengths</h4>
                           <ul className="text-sm text-gray-900 list-disc pl-5 space-y-1">
                             {result.strengths.slice(0, 3).map((strength, index) => (
-                              <li key={index}>{truncateText(strength, 80)}</li>
+                              <li key={index}>{strength}</li>
                             ))}
                           </ul>
                         </div>

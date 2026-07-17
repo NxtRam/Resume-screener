@@ -28,6 +28,7 @@ async function submitApplication(req, res) {
       .upload(filePath, resumeFile.buffer, {
         cacheControl: "3600",
         upsert: false,
+        contentType: resumeFile.mimetype
       });
 
     if (uploadError) {

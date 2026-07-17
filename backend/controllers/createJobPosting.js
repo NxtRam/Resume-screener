@@ -80,8 +80,11 @@ async function generateJobEmbedding(text) {
     }
 
     const response = await ai.models.embedContent({
-      model: 'text-embedding-004',
+      model: 'gemini-embedding-001',
       contents: [{ role: 'user', parts: [{ text }] }],
+      config: {
+        outputDimensionality: 768
+      }
     });
 
     const embeddingValues = response?.embeddings?.[0]?.values;

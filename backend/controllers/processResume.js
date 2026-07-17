@@ -36,8 +36,11 @@ async function generateEmbedding(text) {
     const truncatedText = text.length > maxTokens ? text.substring(0, maxTokens) : text;
 
     const response = await ai.models.embedContent({
-      model: 'text-embedding-004',
+      model: 'gemini-embedding-001',
       contents: [{ role: 'user', parts: [{ text: truncatedText }] }],
+      config: {
+        outputDimensionality: 768
+      }
     });
 
     // let embeddingValues;

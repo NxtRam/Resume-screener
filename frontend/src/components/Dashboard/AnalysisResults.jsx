@@ -69,7 +69,7 @@ export default function AnalysisResults() {
     { name: 'Reviewed', value: analysisResults.filter(r => r.candidate_submissions?.status === 'reviewed').length },
     { name: 'Shortlisted', value: analysisResults.filter(r => r.candidate_submissions?.status === 'shortlisted').length },
     { name: 'Rejected', value: analysisResults.filter(r => r.candidate_submissions?.status === 'rejected').length },
-  ];
+  ].filter(entry => entry.value > 0);
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
