@@ -16,8 +16,15 @@ import {updateJobPosting, createJobPosting} from './controllers/createJobPosting
 const app = express();
 const port = process.env.PORT || 3000;
 
+const allowedOrigins = process.env.PUBLIC_URL ? [process.env.PUBLIC_URL] : [];
+
 const corsOptions = {
-  origin: [process.env.PUBLIC_URL],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 

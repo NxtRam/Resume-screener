@@ -20,7 +20,7 @@ export default function Header() {
 
   useEffect(() => {
     if (user?.id) {
-      supabaseServer
+      supabase
         .from('profiles')
         .select('name')
         .eq('id', user.id)

@@ -5,6 +5,8 @@ const supabaseServiceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const supabaseServer = createClient(supabaseUrl, supabaseServiceRoleKey);
+const supabaseServer = supabaseServiceRoleKey 
+  ? createClient(supabaseUrl, supabaseServiceRoleKey) 
+  : supabase;
 
-export {supabase, supabaseServer};
+export {supabase, supabaseServer};
