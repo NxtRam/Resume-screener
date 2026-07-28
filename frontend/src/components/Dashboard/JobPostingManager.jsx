@@ -27,6 +27,7 @@ const JobPostingManager = () => {
     location: '',
     is_active: true,
   });
+  const [jobToDelete, setJobToDelete] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -80,13 +81,19 @@ const JobPostingManager = () => {
     setShowCreateForm(true);
   };
 
-  const handleDelete = async (jobId) => {
-    if (window.confirm('Are you sure you want to delete this job posting?')) {
+  const handleDelete = (jobId) => {
+    setJobToDelete(jobId);
+  };
+
+  const confirmDelete = async () => {
+    if (jobToDelete) {
       try {
-        await deleteJobPosting.mutateAsync(jobId);
+        await deleteJobPosting.mutateAsync(jobToDelete);
         addToast('Job posting deleted successfully!', 'success');
       } catch (error) {
         addToast(error.message || 'Failed to delete job posting', 'error');
+      } finally {
+        setJobToDelete(null);
       }
     }
   };
@@ -407,6 +414,46 @@ return (
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Custom Confirmation Modal */}
+      {jobToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 border border-red-100">
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Delete Job Posting</h3>
+                  <p className="text-sm text-gray-500 mt-0.5">This action cannot be undone.</p>
+                </div>
+              </div>
+              
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Are you sure you want to delete this job posting? All associated candidate applications and resume screening results will be permanently removed.
+              </p>
+            </div>
+            
+            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-100">
+              <Button
+                variant="outline"
+                onClick={() => setJobToDelete(null)}
+                className="font-medium text-gray-700 hover:bg-gray-100"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDelete}
+                className="font-medium"
+              >
+                Yes
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   </div>

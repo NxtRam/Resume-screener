@@ -8,7 +8,7 @@ import {supabase, supabaseServer} from '../../lib/supabase';
 import { Sparkles, User, LogOut, Menu, X, ChevronDown } from 'lucide-react';
 
 const BrandLogo = () => (
-  <img src='logo.svg' alt="HireLyze Logo" width={32} height={32} className="mr-2 fill-primary" />
+  <img src='/logo.svg' alt="HireLyze Logo" width={32} height={32} className="mr-2 fill-primary" />
 );
 
 export default function Header() {

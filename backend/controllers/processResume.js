@@ -13,19 +13,7 @@ import { GoogleGenAI } from "@google/genai";
 const GEMINI_API_KEY = process.env.GOOGLE_GENAI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-async function extractText(filePath) {
-  return new Promise((resolve, reject) => {
-    const pdfParser = new PDFParser();
 
-    pdfParser.on("pdfParser_dataError", (err) => reject(err.parserError));
-    pdfParser.on("pdfParser_dataReady", (pdfData) => {
-      const text = pdfParser.getRawTextContent();
-      resolve(text);
-    });
-
-    pdfParser.loadPDF(filePath);
-  });
-}
 async function generateEmbedding(text) {
   try {
     if (!text || typeof text !== 'string' || !text.trim()) {
@@ -132,32 +120,32 @@ export async function processResume(req, res) {
     const fileName = resume.file_name.toLowerCase();
 
     if (fileName.endsWith('.pdf')) {
-  try {
-    const pdfParser = new PDFParser();
+      try {
+        const pdfParser = new PDFParser();
 
-    extractedText = await new Promise((resolve, reject) => {
-      pdfParser.on("pdfParser_dataError", errData => {
-        console.error("PDF parsing error:", errData.parserError);
-        reject(new Error("Failed to parse PDF file"));
-      });
+        extractedText = await new Promise((resolve, reject) => {
+          pdfParser.on("pdfParser_dataError", errData => {
+            console.error("PDF parsing error:", errData.parserError);
+            reject(new Error("Failed to parse PDF file"));
+          });
 
-      pdfParser.on("pdfParser_dataReady", pdfData => {
-        const rawText = pdfParser.getRawTextContent();
-        if (!rawText || !rawText.trim()) {
-          console.warn("No text extracted from PDF — possibly image-only or encrypted.");
-          reject(new Error("Could not extract text from the resume."));
-        } else {
-          resolve(rawText);
-        }
-      });
+          pdfParser.on("pdfParser_dataReady", pdfData => {
+            const rawText = pdfParser.getRawTextContent();
+            if (!rawText || !rawText.trim()) {
+              console.warn("No text extracted from PDF — possibly image-only or encrypted.");
+              reject(new Error("Could not extract text from the resume."));
+            } else {
+              resolve(rawText);
+            }
+          });
 
-      // Start parsing
-      pdfParser.parseBuffer(fileBuffer);
-    });
-  } catch (err) {
-    console.error("Unexpected PDF parsing failure:", err);
-    throw new Error("Could not extract text from the resume.");
-  }
+          // Start parsing
+          pdfParser.parseBuffer(fileBuffer);
+        });
+      } catch (err) {
+        console.error("Unexpected PDF parsing failure:", err);
+        throw new Error("Could not extract text from the resume.");
+      }
 
     } else if (fileName.endsWith('.docx')) {
       const result = await mammoth.extractRawText({ buffer: fileBuffer });
@@ -247,7 +235,7 @@ async function analyzeMatchesAgainstJob(resumeId, jobPostingId) {
   }
 }
 
-export async function processResumeCore({resume_id, job_posting_id}) {
+export async function processResumeCore({ resume_id, job_posting_id }) {
 
   const sendResponse = (statusCode, data) => {
     if (res && typeof res.status === 'function') {
@@ -298,10 +286,10 @@ export async function processResumeCore({resume_id, job_posting_id}) {
 
       try {
         const form = new FormData();
-        form.append("file", fileBuffer, fileName); 
+        form.append("file", fileBuffer, fileName);
         form.append("language", "eng");
         form.append("isOverlayRequired", "false");
-    
+
         const response = await fetch("https://api.ocr.space/parse/image", {
           method: "POST",
           headers: {
@@ -309,22 +297,22 @@ export async function processResumeCore({resume_id, job_posting_id}) {
             ...form.getHeaders(),
           },
           body: form,
-        });    
-    
+        });
+
         const data = await response.json();
 
-    const parsedResults = data.ParsedResults;
-    if (!parsedResults || !parsedResults.length) {
-      throw new Error("Could not extract text from the resume.");
-    }
+        const parsedResults = data.ParsedResults;
+        if (!parsedResults || !parsedResults.length) {
+          throw new Error("Could not extract text from the resume.");
+        }
 
-    extractedText = parsedResults.map(r => r.ParsedText).join("\n");
+        extractedText = parsedResults.map(r => r.ParsedText).join("\n");
 
-  } catch (err) {
-    console.error("OCR.Space PDF extraction error:", err);
-    throw new Error("Could not extract text from the resume.");
-  }
-    
+      } catch (err) {
+        console.error("OCR.Space PDF extraction error:", err);
+        throw new Error("Could not extract text from the resume.");
+      }
+
     } else if (fileName.endsWith('.docx')) {
       const result = await mammoth.extractRawText({ buffer: fileBuffer });
       extractedText = result.value;

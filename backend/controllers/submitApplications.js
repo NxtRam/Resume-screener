@@ -81,42 +81,7 @@ async function submitApplication(req, res) {
       console.error("Error creating candidate submission:", submissionError);
       return res.status(500).json({ error: "Failed to create application" });
     }
-    // const mockRes = {
-    //   status: (code) => ({
-    //     json: (data) => {
-    //       if (code >= 400) {
-    //         console.error(`Background processing error (${code}):`, data.error);
-    //         supabase
-    //           .from('resumes')
-    //           .update({ 
-    //             status: 'error', 
-    //             error_message: data.error 
-    //           })
-    //           .eq('id', resumeData.id)
-    //           .then(() => console.log(`Updated resume ${resumeData.id} status to error`))
-    //           .catch(err => console.error('Failed to update resume status:', err));
-    //       } else {
-    //         console.log('Background processing successful:', data.message);
-    //       }
-    //     }
-    //   })
-    // };
 
-    // processResume(
-    //   { body: { resume_id: resumeData.id, job_posting_id: job_posting_id } },
-    //   mockRes
-    // ).catch(error => {
-    //   console.error("Background resume processing failed:", error);
-    //   supabase
-    //     .from('resumes')
-    //     .update({ 
-    //       status: 'error', 
-    //       error_message: error.message 
-    //     })
-    //     .eq('id', resumeData.id)
-    //     .then(() => console.log(`Updated resume ${resumeData.id} status to error`))
-    //     .catch(err => console.error('Failed to update resume status:', err));
-    // });
     const jobId = await jobQueue.addJob({
       type: 'jobPostingEmbedding',
       resume_id: resumeData.id,

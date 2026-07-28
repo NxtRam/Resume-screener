@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import dotenv from 'dotenv';
 dotenv.config();
 import { supabase } from '../config/supabase.js';
-import {processResume} from './processResume.js';
+import { processResume } from './processResume.js';
 
 const GEMINI_API_KEY = process.env.GOOGLE_GENAI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
@@ -13,7 +13,7 @@ async function retryWithBackoff(fn, retries = 5, delay = 1000) {
   } catch (err) {
     if (retries === 0) throw err;
     await new Promise(r => setTimeout(r, delay));
-    return retryWithBackoff(fn, retries - 1, delay * 2); 
+    return retryWithBackoff(fn, retries - 1, delay * 2);
   }
 }
 
@@ -176,7 +176,7 @@ async function analyzeMatches(req, res) {
     // const aiAnalysis = await analyzeResumeWithAI(resume.extracted_text, job.description);
     const aiAnalysis = await retryWithBackoff(
       () => analyzeResumeWithAI(resume.extracted_text, job.description),
-      5, 
+      5,
       1000
     );
 
@@ -215,11 +215,11 @@ async function analyzeMatches(req, res) {
         .insert({
           job_posting_id: jobId,
           resume_id: resumeId,
-            score: aiAnalysis.score,
-            similarity_score: similarityPercentage,
-            strengths: aiAnalysis.strengths,
-            weaknesses: aiAnalysis.weaknesses,
-            suggestions: aiAnalysis.suggestions,
+          score: aiAnalysis.score,
+          similarity_score: similarityPercentage,
+          strengths: aiAnalysis.strengths,
+          weaknesses: aiAnalysis.weaknesses,
+          suggestions: aiAnalysis.suggestions,
         })
         .select()
         .single();
