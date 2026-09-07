@@ -333,15 +333,17 @@ return (
                     </div>
                   </div>
                   <div className="flex flex-wrap items-start gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => window.open(`/jobs/${job.id}`, '_blank')}
-                      className="group/btn"
-                    >
-                      <ExternalLink className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                      View
-                    </Button>
+                    <a href={`/jobs/${job.id}`} target="_blank" rel="noopener noreferrer">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="group/btn"
+                        type="button"
+                      >
+                        <ExternalLink className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+                        View
+                      </Button>
+                    </a>
                     <Button
                       variant="outline"
                       size="sm"
