@@ -138,7 +138,16 @@ async function analyzeMatches(req, res) {
       return res.status(400).json({ error: 'Job posting does not have a valid embedding. Please recreate the job posting.' });
     }
 
-    if (!Array.isArray(job.embedding)) {
+    let jobEmbedding = job.embedding;
+    if (typeof jobEmbedding === 'string') {
+      try {
+        jobEmbedding = JSON.parse(jobEmbedding);
+      } catch (e) {
+        console.error("Failed to parse job embedding string");
+      }
+    }
+
+    if (!Array.isArray(jobEmbedding)) {
       return res.status(500).json({ error: 'Internal server error: Job embedding is not a valid array.' });
     }
 
@@ -168,9 +177,16 @@ async function analyzeMatches(req, res) {
       }
     }
 
-    const jobEmbedding = job.embedding;
+    let resumeEmbedding = resume.embedding;
+    if (typeof resumeEmbedding === 'string') {
+      try {
+        resumeEmbedding = JSON.parse(resumeEmbedding);
+      } catch (e) {
+        console.error("Failed to parse resume embedding string");
+      }
+    }
 
-    const similarityScore = cosineSimilarity(resume.embedding, jobEmbedding);
+    const similarityScore = cosineSimilarity(resumeEmbedding, jobEmbedding);
     const similarityPercentage = Math.round(similarityScore * 100);
 
     // const aiAnalysis = await analyzeResumeWithAI(resume.extracted_text, job.description);
