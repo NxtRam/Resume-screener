@@ -1,4 +1,4 @@
-import PDFParser from "pdf2json";
+import pdfParse from "pdf-parse-fixed";
 import fs from "fs";
 import { extractTextFromPdfBuffer } from "../utils/extractTextPdf2jsonWithOcr.js";
 import fetch from "node-fetch";
@@ -121,27 +121,12 @@ export async function processResume(req, res) {
 
     if (fileName.endsWith('.pdf')) {
       try {
-        const pdfParser = new PDFParser();
-
-        extractedText = await new Promise((resolve, reject) => {
-          pdfParser.on("pdfParser_dataError", errData => {
-            console.error("PDF parsing error:", errData.parserError);
-            reject(new Error("Failed to parse PDF file"));
-          });
-
-          pdfParser.on("pdfParser_dataReady", pdfData => {
-            const rawText = pdfParser.getRawTextContent();
-            if (!rawText || !rawText.trim()) {
-              console.warn("No text extracted from PDF — possibly image-only or encrypted.");
-              reject(new Error("Could not extract text from the resume."));
-            } else {
-              resolve(rawText);
-            }
-          });
-
-          // Start parsing
-          pdfParser.parseBuffer(fileBuffer);
-        });
+        const pdfData = await pdfParse(fileBuffer);
+        extractedText = pdfData.text;
+        if (!extractedText || !extractedText.trim()) {
+           console.warn("No text extracted from PDF — possibly image-only or encrypted.");
+           throw new Error("Could not extract text from the resume.");
+        }
       } catch (err) {
         console.error("Unexpected PDF parsing failure:", err);
         throw new Error("Could not extract text from the resume.");
