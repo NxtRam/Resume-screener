@@ -115,7 +115,7 @@ async function analyzeMatches(req, res) {
     }
 
     const { data: resume, error: resumeError } = await supabase
-      .from('resumes_with_json_embedding')
+      .from('resumes')
       .select('*')
       .eq('id', resumeId)
       .single();
@@ -125,7 +125,7 @@ async function analyzeMatches(req, res) {
     }
 
     const { data: job, error: jobError } = await supabase
-      .from('job_postings_with_json_embedding')
+      .from('job_postings')
       .select('*')
       .eq('id', jobId)
       .single();
