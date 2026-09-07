@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: resume-screener-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: GOOGLE_GENAI_API_KEY
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
